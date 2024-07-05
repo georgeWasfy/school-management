@@ -15,7 +15,7 @@ module.exports = {
   password: {
     path: "password",
     type: "string",
-    length: { min: 8, max: 100 },
+    length: { min: 3, max: 100 },
   },
   email: {
     path: "email",
@@ -122,5 +122,9 @@ module.exports = {
   noOfClassrooms: {
     path: "noOfClassrooms",
     type: "number",
+  },
+  role: {
+    path: "role",
+    oneOf: ['ADMIN','SUPERADMIN']
   },
 };

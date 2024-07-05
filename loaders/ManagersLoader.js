@@ -73,20 +73,20 @@ module.exports = class ManagersLoader {
     this.managers.user = new UserManager(this.injectable);
     this.managers.school = new SchoolManager(this.injectable);
     /*************************************************************************************************/
-    
+
     this.managers.mwsExec = new VirtualStack({
-      ...{ preStack: [/* '__token', */"__params", "__query","__device"] },
+      ...{ preStack: ["__token", "__params", "__query", "__device"] },
       ...this.injectable,
     });
     this.managers.userApi = new ApiHandler({
-        ...this.injectable,
-        ...{ prop: "userExposed" },
-      });
-  
-      this.managers.schoolApi = new ApiHandler({
-        ...this.injectable,
-        ...{ prop: "userExposed" },
-      });
+      ...this.injectable,
+      ...{ prop: "userExposed" },
+    });
+
+    this.managers.schoolApi = new ApiHandler({
+      ...this.injectable,
+      ...{ prop: "userExposed" },
+    });
 
     this.managers.userServer = new UserServer({
       config: this.config,
