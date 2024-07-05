@@ -127,4 +127,8 @@ module.exports = {
     path: "role",
     oneOf: ['ADMIN','SUPERADMIN']
   },
+  school: {
+    path: "school",
+    type: "string",
+  },
 };
