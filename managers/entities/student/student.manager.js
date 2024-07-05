@@ -20,6 +20,7 @@ module.exports = class StudentManager {
     this.validators = validators;
     this.mongomodels = mongomodels;
     this.tokenManager = managers.token;
+    this.managers = managers;
     this.userExposed = [
       "post=create",
       "patch=update",
@@ -34,11 +35,19 @@ module.exports = class StudentManager {
     const student = { name, email, school };
 
     // Data validation
-    let result = await this.validators.student.create(student);
-    if (result) return result;
+    let validationResult = await this.validators.student.create(student);
+    if (validationResult) return validationResult;
 
     // Creation Logic
-    let createdStudent = await createStudent(adminId, student);
+    let [err, createdStudent] = await createStudent(adminId, student);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
     // Response
     return {
       student: createdStudent,
@@ -54,14 +63,23 @@ module.exports = class StudentManager {
       throw new Error("A query param id must be provided");
     }
     // Data validation
-    let result = await this.validators.student.update(student);
-    if (result) return result;
+    let validationResult = await this.validators.student.update(student);
+    if (validationResult) return validationResult;
 
-    const res = await updateStudent(adminId, query.id, student);
+    const [err, response] = await updateStudent(adminId, query.id, student);
+
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
 
     // Response
     return {
-      msg: res.msg || "updated succesfully",
+      msg: "updated succesfully",
     };
   }
 
@@ -73,11 +91,18 @@ module.exports = class StudentManager {
       throw new Error("A query param id must be provided");
     }
 
-    const deleted = await deleteStudent(adminId, query.id);
-
+    const [err, deleted] = await deleteStudent(adminId, query.id);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
     // Response
     return {
-      msg: deleted.msg || "deleted succesfully",
+      msg: "deleted succesfully",
     };
   }
 
@@ -93,7 +118,7 @@ module.exports = class StudentManager {
 
     // Response
     return {
-      students: {...allStudent},
+      students: { ...allStudent },
     };
   }
 };

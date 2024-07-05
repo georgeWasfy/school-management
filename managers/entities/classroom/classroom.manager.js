@@ -77,7 +77,7 @@ module.exports = class ClassroomManager {
     }
     // Response
     return {
-      classroom: result,
+      msg: "updated succesfully",
     };
   }
 
@@ -100,7 +100,7 @@ module.exports = class ClassroomManager {
     }
     // Response
     return {
-      classroom: deleted,
+      msg: "deleted succesfully",
     };
   }
 
