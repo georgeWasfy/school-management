@@ -131,4 +131,15 @@ module.exports = {
     path: "school",
     type: "string",
   },
+  capacity: {
+    path: "capacity",
+    type: "number",
+  },
+  students: {
+    type: "Array",
+    items: {
+      type: "String",
+      length: { min: 3, max: 100 },
+    },
+  },
 };

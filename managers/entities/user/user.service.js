@@ -26,7 +26,15 @@ const loginUser = async (user) => {
   return foundUser;
 };
 
+const isUserExist = async (userId) => {
+  const admin = await UserModel.findById(userId);
+  if (admin) {
+    return [null, admin];
+  }
+  return [{ ok: false, code: 404, message: "User Not Found" }, null];
+};
 module.exports = {
   createUser,
   loginUser,
+  isUserExist,
 };
