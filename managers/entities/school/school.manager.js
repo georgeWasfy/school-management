@@ -18,6 +18,7 @@ module.exports = class School {
     this.cortex = cortex;
     this.validators = validators;
     this.mongomodels = mongomodels;
+    this.managers = managers;
     this.tokenManager = managers.token;
     this.schoolsCollection = "schools";
     this.userExposed = [
@@ -28,7 +29,7 @@ module.exports = class School {
     ];
   }
 
-  async create({ name, address, phoneNumber, noOfClassrooms }) {
+  async create({ name, address, phoneNumber, noOfClassrooms, ...rest }) {
     const school = { name, address, phoneNumber, noOfClassrooms };
 
     // Data validation
@@ -36,7 +37,15 @@ module.exports = class School {
     if (result) return result;
 
     // Creation Logic
-    let createdSchool = await createSchool(school);
+    let [err, createdSchool] = await createSchool(school);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
 
     // Response
     return {
@@ -54,8 +63,15 @@ module.exports = class School {
     let result = await this.validators.school.update(school);
     if (result) return result;
 
-    await updateSchool(query.id, school);
-
+    const [err, doc] = await updateSchool(query.id, school);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
     // Response
     return {
       msg: "updated succesfully",
@@ -68,8 +84,15 @@ module.exports = class School {
       throw new Error("A query param id must be provided");
     }
 
-    await deleteSchool(query.id);
-
+    const [err, doc] = await deleteSchool(query.id);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
     // Response
     return {
       msg: "deleted succesfully",
@@ -78,14 +101,21 @@ module.exports = class School {
 
   async list(req) {
     const query = req.__query;
-    let page = undefined
-    let perPage = undefined
+    let page = undefined;
+    let perPage = undefined;
     if (query.page && query.perPage) {
-      page = query.page
-      perPage = query.perPage
+      page = query.page;
+      perPage = query.perPage;
     }
-    let allSchools = await getAllSchools(page, perPage);
-
+    let [err, allSchools] = await getAllSchools(page, perPage);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
     // Response
     return {
       schools: { ...allSchools },

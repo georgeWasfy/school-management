@@ -1,5 +1,5 @@
 const UserModel = require("./user.mongoModel");
-
+const mongoose = require("mongoose");
 const createUser = async (user) => {
   const newUser = new UserModel({
     username: user.username,
@@ -9,12 +9,16 @@ const createUser = async (user) => {
     phoneNumber: user.phoneNumber,
   });
 
-  const hashedPassword = await newUser.createHash(user.password);
-  newUser.password = hashedPassword;
+  try {
+    const hashedPassword = await newUser.createHash(user.password);
+    newUser.password = hashedPassword;
 
-  // Save newUser object to database
-  const doc = await newUser.save();
-  return doc;
+    // Save newUser object to database
+    const doc = await newUser.save();
+    return [null, doc];
+  } catch (error) {
+    return [{ ok: false, code: 400, message: error }, null];
+  }
 };
 
 const loginUser = async (user) => {
@@ -33,8 +37,29 @@ const isUserExist = async (userId) => {
   }
   return [{ ok: false, code: 404, message: "User Not Found" }, null];
 };
+
+const assignSchool = async (adminId, school) => {
+  const [err, admin] = await isUserExist(adminId);
+  if (err) {
+    return [err, null];
+  }
+  try {
+    const updated = await UserModel.updateOne(
+      { _id: adminId },
+      { $set: { school } }
+    );
+    if (updated) {
+      return [null, updated];
+    }
+  } catch (error) {
+    console.log("🚀 ~ assignSchool ~ error:", error);
+    return [{ ok: false, code: 400, message: error }, null];
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
   isUserExist,
+  assignSchool,
 };

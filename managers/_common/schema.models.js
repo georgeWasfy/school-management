@@ -146,4 +146,8 @@ module.exports = {
     path: "action",
     oneOf: ["APPEND", "REPLACE", "DELETE"],
   },
+  user: {
+    path: "user",
+    type: "string",
+  },
 };

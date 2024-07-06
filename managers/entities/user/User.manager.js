@@ -1,4 +1,4 @@
-const { createUser, loginUser } = require("./user.service");
+const { createUser, loginUser, assignSchool } = require("./user.service");
 
 module.exports = class UserManager {
   constructor({
@@ -14,11 +14,20 @@ module.exports = class UserManager {
     this.cortex = cortex;
     this.validators = validators;
     this.mongomodels = mongomodels;
+    this.managers = managers;
     this.tokenManager = managers.token;
-    this.userExposed = ["post=signup", "post=login"];
+    this.userExposed = ["post=signup", "post=login", "post=assignSchool"];
   }
 
-  async signup({ username, email, password, school, role, phoneNumber }) {
+  async signup({
+    username,
+    email,
+    password,
+    school,
+    role,
+    phoneNumber,
+    ...rest
+  }) {
     const user = { username, email, password, school, role, phoneNumber };
 
     // Data validation
@@ -26,7 +35,15 @@ module.exports = class UserManager {
     if (result) return result;
 
     // Creation Logic
-    let createdUser = await createUser(user);
+    let [err, createdUser] = await createUser(user);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
     let longToken = this.tokenManager.genLongToken({
       userId: createdUser._id,
       userKey: createdUser.role,
@@ -63,5 +80,27 @@ module.exports = class UserManager {
       user: userFound,
       longToken,
     };
+  }
+
+  async assignSchool({ user, school, ...rest }) {
+    const body = { user, school };
+
+    // Data validation
+    let result = await this.validators.user.assignSchool(body);
+    if (result) return result;
+
+    // Creation Logic
+    let [err, updatedUser] = await assignSchool(user, school);
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
+
+    // Response
+    return { msg: "Admin assigned to the school" };
   }
 };

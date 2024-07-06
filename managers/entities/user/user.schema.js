@@ -45,4 +45,18 @@ module.exports = {
       label: "password",
     },
   ],
+  assignSchool: [
+    {
+      model: "user",
+      required: true,
+      path: "user",
+      label: "user",
+    },
+    {
+      model: "school",
+      required: true,
+      path: "school",
+      label: "school",
+    },
+  ],
 };

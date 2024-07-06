@@ -33,6 +33,17 @@
 		"password": "test",
 		}
 		```
+  * [POST] /api/user/assignSchool
+  * **description**:
+    This endpoint is used to assign an admin to a specific school in order to manage the schools students and classrooms:
+  * * **body**
+		```yaml
+		{
+		"user": "6626a42b5c74e204f6b58386",
+		"school": "6626a42b5c74e204f6b58386",
+		}
+		```
+
 ```
 > Users with ADMIN role can manage student/classroom collections.
 

@@ -36,19 +36,23 @@ module.exports = ({ meta, config, managers }) => {
         errors: "unauthorized",
       });
     }
+
     switch (req.params.moduleName) {
       case "school":
         if (isSuperAdmin(decoded.userKey)) {
           return next(decoded);
         }
+        break
       case "classroom":
         if (isAdmin(decoded.userKey)) {
           return next(decoded);
         }
+        break
       case "student":
         if (isAdmin(decoded.userKey)) {
           return next(decoded);
         }
+        break
       default:
         break;
     }
