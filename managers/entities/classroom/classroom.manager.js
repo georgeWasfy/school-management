@@ -3,6 +3,7 @@ const {
   updateClassroom,
   deleteClassroom,
   getAllClassrooms,
+  updateClassroomStudents
 } = require("./classroom.service");
 
 module.exports = class ClassroomManager {
@@ -26,6 +27,7 @@ module.exports = class ClassroomManager {
       "patch=update",
       "delete=delete",
       "get=list",
+      "patch=manageStudents",
     ];
   }
 
@@ -117,6 +119,39 @@ module.exports = class ClassroomManager {
     // Response
     return {
       classrooms: { ...allClassrooms },
+    };
+  }
+
+  async manageStudents({ students, action, ...rest }) {
+    const query = rest.__query;
+    const studentsUpdateObj = { action, students };
+    const token = rest.__token;
+    const adminId = token.userId;
+    if (!query.id) {
+      throw new Error("Classroom Id must be provided");
+    }
+    // Data validation
+    let validationResult = await this.validators.classroom.updateStudents(
+      studentsUpdateObj
+    );
+    if (validationResult) return validationResult;
+
+    const [err, result] = await updateClassroomStudents(
+      adminId,
+      query.id,
+      studentsUpdateObj
+    );
+    if (err) {
+      return {
+        selfHandleResponse: this.managers.responseDispatcher.dispatch(
+          rest.res,
+          err
+        ),
+      };
+    }
+    // Response
+    return {
+      msg: "updated succesfully",
     };
   }
 };

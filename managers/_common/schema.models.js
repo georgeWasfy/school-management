@@ -125,7 +125,7 @@ module.exports = {
   },
   role: {
     path: "role",
-    oneOf: ['ADMIN','SUPERADMIN']
+    oneOf: ["ADMIN", "SUPERADMIN"],
   },
   school: {
     path: "school",
@@ -141,5 +141,9 @@ module.exports = {
       type: "String",
       length: { min: 3, max: 100 },
     },
+  },
+  action: {
+    path: "action",
+    oneOf: ["APPEND", "REPLACE", "DELETE"],
   },
 };

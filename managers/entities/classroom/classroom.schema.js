@@ -51,4 +51,19 @@ module.exports = {
       label: "students",
     },
   ],
+
+  updateStudents: [
+    {
+      model: "action",
+      required: true,
+      path: "action",
+      label: "action",
+    },
+    {
+      model: "students",
+      required: true,
+      path: "students",
+      label: "students",
+    },
+  ],
 };
