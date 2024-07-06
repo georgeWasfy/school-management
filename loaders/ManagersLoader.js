@@ -27,18 +27,18 @@ const ClassroomManager = require("../managers/entities/classroom/classroom.manag
  * @return modules tree with instance of each module
  */
 module.exports = class ManagersLoader {
-  constructor({ config, cortex, cache, oyster, aeon }) {
+  constructor({ config, oyster, aeon }) {
     this.managers = {};
     this.config = config;
-    this.cache = cache;
-    this.cortex = cortex;
+    // this.cache = cache;
+    // this.cortex = cortex;
 
     this._preload();
     this.injectable = {
       utils,
-      cache,
+      // cache,
       config,
-      cortex,
+      // cortex,
       oyster,
       aeon,
       managers: this.managers,
